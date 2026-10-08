@@ -45,6 +45,7 @@ import {
   sectionLabelStyle,
   useConfirmArm,
 } from "./fields";
+import { glassPanel, PANEL_HOVER } from "../glassPanel";
 import { MobileSheet, MobileSheetTab } from "./MobileSheet";
 import {
   DEFAULT_WALL_COLOR,
@@ -91,16 +92,8 @@ const BUILDING_TYPES: [BuildingType, string][] = [
   ["factoryHall", "Factory Hall"],
 ];
 
-// Matches BlocksSidebar's own floating-panel treatment (12px radius, a
-// shadow with real presence) rather than the design system's default card
-// shadow, which reads as a webpage card and disappears against the dark,
-// atmospheric 3D canvas this panel actually floats over. The light surface
-// itself stays intentional (not dark-glass like the sidebar): the
-// @lastch1ld/ui components filling this panel's body (Button,
-// SelectInput, Switch) have no dark-theme styling to fall back on, so a
-// light "control panel over a dark stage" pairing is the correct call here
-// rather than an accident to fix.
 const asideStyle: CSSProperties = {
+  ...glassPanel,
   position: "absolute",
   top: 110,
   bottom: 120,
@@ -108,12 +101,6 @@ const asideStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   overflowY: "auto",
-  background: "var(--ui-surface)",
-  color: "var(--ui-fg)",
-  border: "1px solid var(--ui-border-strong)",
-  borderRadius: 12,
-  boxShadow: "0 16px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.2)",
-  fontFamily: "var(--ui-font-sans)",
   fontSize: "0.8125rem",
 };
 
@@ -234,7 +221,7 @@ function SavedBuildsSection() {
                 color: "inherit",
                 cursor: "pointer",
                 padding: "4px 6px",
-                "--hc-hover-bg": "rgba(0,0,0,0.05)",
+                "--hc-hover-bg": PANEL_HOVER,
               } as CSSProperties
             }
           >
@@ -258,7 +245,7 @@ function SavedBuildsSection() {
                 // this app (BlocksSidebar) is nearly invisible here; a
                 // light card needs a dark-tinted border and a properly
                 // readable red, not the dark-glass palette copied verbatim.
-                border: "1px solid rgba(0,0,0,0.14)",
+                border: "1px solid var(--ui-border-strong)",
                 borderRadius: 6,
                 color: "#d92d20",
                 padding: 0,
@@ -418,7 +405,7 @@ function GlobalSettings() {
                 width: 48,
                 height: 40,
                 padding: 0,
-                border: "1px solid rgba(0,0,0,0.15)",
+                border: "1px solid var(--ui-border-strong)",
                 borderRadius: 6,
                 cursor: "pointer",
               }}
@@ -684,7 +671,7 @@ function BlockEditor({ block }: { block: BaseBlock }) {
                 width: 48,
                 height: 40,
                 padding: 0,
-                border: "1px solid rgba(0,0,0,0.15)",
+                border: "1px solid var(--ui-border-strong)",
                 borderRadius: 6,
                 cursor: "pointer",
               }}
@@ -1844,9 +1831,9 @@ export function Inspector() {
       <MobileSheet
         title={title}
         onClose={() => setMobilePanel(null)}
-        background="var(--ui-surface)"
+        background="var(--ui-glass-strong)"
         color="var(--ui-fg)"
-        hoverBg="rgba(0,0,0,0.06)"
+        hoverBg={PANEL_HOVER}
       >
         {content}
       </MobileSheet>

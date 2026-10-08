@@ -6,6 +6,7 @@ import type { PlacedComponent } from "../types";
 import { useIsNarrowViewport } from "../useIsNarrowViewport";
 import { useConfirmArm } from "./fields";
 import { MobileSheet, MobileSheetTab } from "./MobileSheet";
+import { glassPanel, PANEL_HOVER } from "../glassPanel";
 
 const rowBase: CSSProperties = {
   display: "flex",
@@ -21,7 +22,7 @@ const rowBase: CSSProperties = {
   fontFamily: "var(--ui-font-sans)",
   fontSize: 13,
   textAlign: "left",
-  color: "#f3f4f6",
+  color: "var(--ui-fg)",
   background: "transparent",
 };
 
@@ -63,9 +64,9 @@ function Row({
         ...rowBase,
         marginLeft: indent ? 18 : 0,
         width: indent ? "calc(100% - 18px)" : "100%",
-        background: active ? "rgba(255,204,0,0.22)" : "transparent",
+        background: active ? "color-mix(in oklab, var(--ui-primary) 20%, transparent)" : "transparent",
         border: active
-          ? "1px solid rgba(255,204,0,0.6)"
+          ? "1px solid color-mix(in oklab, var(--ui-primary) 50%, transparent)"
           : "1px solid transparent",
         "--hc-hover-bg": "rgba(255,255,255,0.07)",
       } as CSSProperties}
@@ -213,7 +214,7 @@ export function BlocksSidebar() {
           <div
             style={{
               fontSize: 11,
-              color: "rgba(255,255,255,0.4)",
+              color: "var(--ui-fg-subtle)",
               padding: "4px 8px",
             }}
           >
@@ -253,9 +254,9 @@ export function BlocksSidebar() {
       <MobileSheet
         title={title}
         onClose={() => setMobilePanel(null)}
-        background="rgba(20, 20, 24, 0.96)"
-        color="#f3f4f6"
-        hoverBg="rgba(255,255,255,0.1)"
+        background="var(--ui-glass-strong)"
+        color="var(--ui-fg)"
+        hoverBg={PANEL_HOVER}
       >
         {listContent}
       </MobileSheet>
@@ -266,23 +267,13 @@ export function BlocksSidebar() {
     <div
       className="hc-panel hc-sidebar"
       style={{
+        ...glassPanel,
         position: "absolute",
         top: 110,
         bottom: 120,
         left: 12,
         overflowY: "auto",
         padding: 12,
-        borderRadius: 12,
-        background: "rgba(20, 20, 24, 0.45)",
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        // Matches Inspector's own floating-panel shadow so both panels
-        // read as one elevation system rather than two accidentally
-        // different treatments sitting side by side.
-        boxShadow: "0 16px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.2)",
-        color: "#f3f4f6",
-        fontFamily: "var(--ui-font-sans)",
       }}
     >
       <div
@@ -291,7 +282,7 @@ export function BlocksSidebar() {
           fontWeight: 500,
           textTransform: "uppercase",
           letterSpacing: "0.04em",
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--ui-fg-subtle)",
           padding: "4px 8px 8px",
         }}
       >

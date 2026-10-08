@@ -2,7 +2,7 @@ import { Bounds, Environment, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, N8AO, ToneMapping } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
-import { CornerUpLeft, CornerUpRight, HelpCircle, X } from "@untitledui/icons";
+import { CornerUpLeft, CornerUpRight, HelpCircle, Home02, X } from "@untitledui/icons";
 import {
   Avatar,
   Button,
@@ -252,13 +252,31 @@ function App() {
       >
         <Header
           floating
-          data-theme="dark"
+          style={{ height: 48 }}
+          logo={
+            <span
+              aria-hidden
+              style={{
+                display: "grid",
+                placeItems: "center",
+                width: 28,
+                height: 28,
+                borderRadius: 8,
+                color: "var(--ui-fg)",
+                border: "1px solid var(--ui-glass-border)",
+                background: "var(--ui-field)",
+                boxShadow: "var(--ui-shadow-rim)",
+              }}
+            >
+              <Home02 style={{ width: 16, height: 16 }} />
+            </span>
+          }
           title="House Configurator"
           actions={
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <Button
-                size="medium"
-                variant="outline"
+                size="small"
+                variant="ghost"
                 icon={<CornerUpLeft />}
                 aria-label="Undo"
                 title="Undo (Ctrl+Z)"
@@ -266,19 +284,23 @@ function App() {
                 onClick={undo}
               />
               <Button
-                size="medium"
-                variant="outline"
+                size="small"
+                variant="ghost"
                 icon={<CornerUpRight />}
                 aria-label="Redo"
                 title="Redo (Ctrl+Shift+Z)"
                 disabled={!canRedo}
                 onClick={redo}
               />
+              <span
+                aria-hidden
+                style={{ width: 1, height: 16, background: "var(--ui-border-strong)" }}
+              />
               <Popover
                 trigger={
                   <Button
-                    size="medium"
-                    variant="outline"
+                    size="small"
+                    variant="ghost"
                     icon={<HelpCircle />}
                     aria-label="Keyboard shortcuts"
                     title="Keyboard shortcuts"

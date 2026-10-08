@@ -2,6 +2,7 @@ import { ChevronDown, ChevronRight } from "@untitledui/icons";
 import { Input, Text } from "@lastch1ld/ui";
 import type { ChangeEvent, CSSProperties, FocusEvent, ReactNode } from "react";
 import { useEffect, useState } from "react";
+import { PANEL_HOVER } from "../glassPanel";
 
 /**
  * The app's one destructive-action confirm pattern: click once to arm
@@ -123,7 +124,7 @@ export function CollapsibleSection({
             margin: "-4px",
             cursor: "pointer",
             textAlign: "left",
-            "--hc-hover-bg": "rgba(0,0,0,0.05)",
+            "--hc-hover-bg": PANEL_HOVER,
           } as CSSProperties
         }
       >
@@ -176,13 +177,13 @@ export function MaterialSwatchPicker<T extends string>({
                 gap: 4,
                 width: 64,
                 padding: 4,
-                background: isSelected ? "rgba(255,204,0,0.14)" : "transparent",
-                border: `1.5px solid ${isSelected ? "var(--ui-primary)" : "rgba(0,0,0,0.12)"}`,
+                background: isSelected ? "color-mix(in oklab, var(--ui-primary) 16%, transparent)" : "transparent",
+                border: `1.5px solid ${isSelected ? "var(--ui-primary)" : "var(--ui-border-strong)"}`,
                 borderRadius: 8,
                 cursor: "pointer",
                 "--hc-hover-bg": isSelected
-                  ? "rgba(255,204,0,0.22)"
-                  : "rgba(0,0,0,0.05)",
+                  ? "color-mix(in oklab, var(--ui-primary) 26%, transparent)"
+                  : PANEL_HOVER,
               } as CSSProperties
             }
           >
@@ -194,7 +195,7 @@ export function MaterialSwatchPicker<T extends string>({
                 backgroundImage: `url(${opt.thumbnail})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                border: "1px solid rgba(0,0,0,0.15)",
+                border: "1px solid var(--ui-border-strong)",
                 flexShrink: 0,
               }}
             />
