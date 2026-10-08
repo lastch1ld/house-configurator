@@ -1,4 +1,4 @@
-import { Bounds, Environment, OrbitControls } from "@react-three/drei";
+import { AdaptiveDpr, Bounds, Environment, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, N8AO, ToneMapping } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
@@ -234,8 +234,14 @@ function App() {
         }}
       >
         <SceneContextMenu>
+          {/* Nothing here animates, so render only when something changes (state, resize, orbit) instead of
+              60 times a second while idle. While the camera is being dragged, `regress` + AdaptiveDpr drop the
+              pixel ratio for smooth orbiting on weak GPUs and restore it right after. */}
           <Canvas
             shadows
+            frameloop="demand"
+            dpr={[1, 1.75]}
+            performance={{ min: 0.5 }}
             gl={{ alpha: true, preserveDrawingBuffer: true }}
             camera={{ position: [10, 8, 12], fov: 50 }}
             onPointerMissed={() => {
@@ -263,8 +269,10 @@ function App() {
             </mesh>
             <gridHelper args={[40, 40, "#888", "#555"]} />
             <AxisIndicator corner={[-19, -19]} />
+            <AdaptiveDpr />
             <OrbitControls
               makeDefault
+              regress
               mouseButtons={{
                 LEFT: MOUSE.ROTATE,
                 MIDDLE: MOUSE.PAN,
@@ -272,7 +280,7 @@ function App() {
               }}
             />
             <EffectComposer>
-              <N8AO aoRadius={0.5} intensity={0.5} />
+              <N8AO aoRadius={0.5} intensity={0.5} halfRes />
               <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
             </EffectComposer>
           </Canvas>
