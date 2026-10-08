@@ -19,7 +19,7 @@ export interface MaterialDef {
 }
 
 function tex(id: string, tileSize: number, label: string, tintable?: boolean): MaterialDef {
-  const base = `/textures/${id}/${id}`;
+  const base = `${import.meta.env.BASE_URL}textures/${id}/${id}`;
   return {
     label,
     diff: `${base}_diff_1k.jpg`,
