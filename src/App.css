@@ -1,0 +1,40 @@
+/* Shared interaction feedback for the app's own plain-HTML buttons (the
+ * sidebar rows, delete/close icon buttons, material swatches, the
+ * collapsible-section toggle, the mobile sheet chrome) — these are custom
+ * elements outside the @lastch1ld/ui design system, which owns hover/
+ * focus for its own <Button>/<SelectInput>/etc. already. Without this, a
+ * static desktop UI with zero hover/press feedback is a big part of what
+ * reads as "unfinished" rather than "designed" — every clickable surface
+ * needs to visibly acknowledge the cursor and the keyboard.
+ *
+ * `filter: brightness()` is used instead of a per-element hover color so
+ * one rule works correctly against both the dark glass panels (sidebar,
+ * mobile sheets) and the light inspector card/swatches — it lightens dark
+ * surfaces and darkens light ones exactly as expected either way. */
+/* --hc-hover-bg is set inline per element (see usages) to whatever tint
+ * actually reads as "hovered" against that element's own surface — a
+ * translucent white tint on the dark glass panels, a translucent black
+ * tint on the light inspector card. A single hard-coded hover color can't
+ * serve both without looking wrong on one of them. `filter: brightness()`
+ * still helps on top of that for elements with their own solid/imaged
+ * background (material swatches). */
+.hc-interactive {
+  transition: filter 0.12s ease, transform 0.06s ease, background-color 0.12s ease;
+}
+.hc-interactive:hover {
+  filter: brightness(1.15);
+  background-color: var(--hc-hover-bg, transparent);
+}
+.hc-interactive:active {
+  filter: brightness(0.92);
+  transform: scale(0.98);
+}
+.hc-interactive:focus-visible {
+  outline: 2px solid var(--color-primary, #fc0);
+  outline-offset: 2px;
+}
+.hc-interactive:disabled {
+  filter: none;
+  transform: none;
+  background-color: transparent;
+}
