@@ -1,8 +1,5 @@
 import { alongWallPosition } from "./componentSnap";
-import {
-  DEFAULT_ROOF_MATERIAL,
-  DEFAULT_WALL_MATERIAL,
-} from "./components/materials";
+import { DEFAULT_ROOF_MATERIAL, DEFAULT_WALL_MATERIAL } from "./components/materials";
 import { FLAT_ROOF_THICKNESS } from "./constants";
 import { computeRoofComponentPlacement } from "./floorDuplication";
 import { nanoid } from "./nanoid";
@@ -37,7 +34,7 @@ function block(
   width: number,
   depth: number,
   wallHeight: number,
-  roofHeight: number,
+  roofHeight: number
 ): BaseBlock {
   return { id, x, z, width, depth, wallHeight, roofHeight, rotation: 0 };
 }
@@ -53,19 +50,10 @@ function placeOnWall(
   side: WallSide,
   offset: number,
   floorIndex = 0,
-  variant: ComponentVariant = "standard",
+  variant: ComponentVariant = "standard"
 ): PlacedComponent {
-  const { x, z, rotationY } = alongWallPosition(
-    targetBlock,
-    side,
-    offset,
-    type,
-  );
-  const { scale, centerY } = resolveComponentSize(
-    type,
-    variant,
-    targetBlock.wallHeight,
-  );
+  const { x, z, rotationY } = alongWallPosition(targetBlock, side, offset, type);
+  const { scale, centerY } = resolveComponentSize(type, variant, targetBlock.wallHeight);
   return {
     id,
     type,
@@ -74,11 +62,7 @@ function placeOnWall(
     position: [x, centerY, z],
     rotation: [0, rotationY, 0],
     scale,
-    wallRef: {
-      blockId: targetBlock.id,
-      location: { kind: "side", side },
-      offset,
-    },
+    wallRef: { blockId: targetBlock.id, location: { kind: "side", side }, offset },
   };
 }
 
@@ -98,7 +82,7 @@ function railingBar(
   axis: "x" | "z",
   center: number,
   span: number,
-  pos: number,
+  pos: number
 ): PlacedComponent {
   const [, railingHeight, railingThickness] = DEFAULT_SCALE.railing;
   const rotationY = axis === "z" ? Math.PI / 2 : 0;
@@ -132,7 +116,7 @@ function terraceRailings(
   width: number,
   depth: number,
   outerAxis: "x" | "z",
-  outerSign: 1 | -1,
+  outerSign: 1 | -1
 ): PlacedComponent[] {
   const [, , railingThickness] = DEFAULT_SCALE.railing;
   // "a" is the axis the outer coordinate varies along (outerAxis itself);
@@ -150,7 +134,7 @@ function terraceRailings(
     bAxis,
     bCenter,
     bSize,
-    outerCoord,
+    outerCoord
   );
   const sideRails = [-1, 1].map((sign) =>
     railingBar(
@@ -159,24 +143,16 @@ function terraceRailings(
       outerAxis,
       aCenter,
       aSize,
-      bCenter + sign * (bSize / 2 - railingThickness / 2),
-    ),
+      bCenter + sign * (bSize / 2 - railingThickness / 2)
+    )
   );
   return [outerRail, ...sideRails];
 }
 
 /** An overhead duct run along a hall block's long (depth) axis, centered,
  * with a margin at each end so it doesn't poke through the end walls. */
-function hallDucting(
-  id: string,
-  floorIndex: number,
-  targetBlock: BaseBlock,
-): PlacedComponent {
-  const { scale, centerY } = resolveComponentSize(
-    "ducting",
-    "standard",
-    targetBlock.wallHeight,
-  );
+function hallDucting(id: string, floorIndex: number, targetBlock: BaseBlock): PlacedComponent {
+  const { scale, centerY } = resolveComponentSize("ducting", "standard", targetBlock.wallHeight);
   const length = Math.max(targetBlock.depth - 4, 2);
   return {
     id,
@@ -196,13 +172,9 @@ function hallDucting(
 function hallBracing(
   idPrefix: string,
   floorIndex: number,
-  targetBlock: BaseBlock,
+  targetBlock: BaseBlock
 ): PlacedComponent[] {
-  const { scale, centerY } = resolveComponentSize(
-    "bracing",
-    "standard",
-    targetBlock.wallHeight,
-  );
+  const { scale, centerY } = resolveComponentSize("bracing", "standard", targetBlock.wallHeight);
   const inset = 0.15;
   return [-1, 1].map((sign) => ({
     id: `${idPrefix}-brace-${sign}`,
@@ -226,12 +198,12 @@ function hallBracing(
 function hallUnderroofRailing(
   id: string,
   floorIndex: number,
-  targetBlock: BaseBlock,
+  targetBlock: BaseBlock
 ): PlacedComponent {
   const { scale, centerY } = resolveComponentSize(
     "underroofRailing",
     "standard",
-    targetBlock.wallHeight,
+    targetBlock.wallHeight
   );
   return {
     id,
@@ -258,7 +230,7 @@ function simpleBalcony(
   floorIndex: number,
   targetBlock: BaseBlock,
   side: WallSide,
-  balconyDepth: number,
+  balconyDepth: number
 ): PlacedComponent[] {
   const slabThickness = FLAT_ROOF_THICKNESS;
   const [, railHeight, railThickness] = DEFAULT_SCALE.railing;
@@ -268,8 +240,7 @@ function simpleBalcony(
     left: targetBlock.x - targetBlock.width / 2,
     right: targetBlock.x + targetBlock.width / 2,
   };
-  const span =
-    side === "front" || side === "back" ? targetBlock.width : targetBlock.depth;
+  const span = side === "front" || side === "back" ? targetBlock.width : targetBlock.depth;
   let x: number;
   let z: number;
   let width: number;
@@ -312,8 +283,7 @@ function simpleBalcony(
   }
   const outerSize = outerAxis === "x" ? width : depth;
   const outerCenter = outerAxis === "x" ? x : z;
-  const railOuterCoord =
-    outerCenter + outerSign * (outerSize / 2 - railThickness / 2);
+  const railOuterCoord = outerCenter + outerSign * (outerSize / 2 - railThickness / 2);
   const railSpan = outerAxis === "x" ? depth : width;
   const railRotationY = outerAxis === "x" ? Math.PI / 2 : 0;
   const railX = outerAxis === "x" ? railOuterCoord : x;
@@ -357,17 +327,14 @@ function roofSlotComponent(
   targetBlock: BaseBlock,
   slopeIndex: RoofSlopeIndex,
   floorIndex: number,
-  effectiveRoofType: RoofType,
+  effectiveRoofType: RoofType
 ): PlacedComponent[] {
   const raise = type === "skylight" ? SKYLIGHT_RAISE : SOLAR_PANEL_RAISE;
   const [footprintWidth, , footprintLength] = DEFAULT_SCALE[type];
-  const placement = computeRoofComponentPlacement(
-    targetBlock,
-    effectiveRoofType,
-    slopeIndex,
-    raise,
-    [footprintWidth, footprintLength],
-  );
+  const placement = computeRoofComponentPlacement(targetBlock, effectiveRoofType, slopeIndex, raise, [
+    footprintWidth,
+    footprintLength,
+  ]);
   if (!placement) return [];
   return [
     {
@@ -397,10 +364,9 @@ function squareWindowGrid(
   rows: number,
   size: number,
   marginAlong: number,
-  marginUp: number,
+  marginUp: number
 ): PlacedComponent[] {
-  const span =
-    side === "front" || side === "back" ? targetBlock.width : targetBlock.depth;
+  const span = side === "front" || side === "back" ? targetBlock.width : targetBlock.depth;
   const usableSpan = span - 2 * marginAlong;
   const usableHeight = targetBlock.wallHeight - marginUp - size / 2;
   const colStep = cols > 1 ? usableSpan / (cols - 1) : 0;
@@ -410,12 +376,7 @@ function squareWindowGrid(
     const centerY = marginUp + size / 2 + row * rowStep;
     for (let col = 0; col < cols; col++) {
       const offset = marginAlong + col * colStep;
-      const { x, z, rotationY } = alongWallPosition(
-        targetBlock,
-        side,
-        offset,
-        "window",
-      );
+      const { x, z, rotationY } = alongWallPosition(targetBlock, side, offset, "window");
       result.push({
         id: `${idPrefix}-${row}-${col}`,
         type: "window",
@@ -435,7 +396,7 @@ function squareWindowGrid(
 function baseConfig(
   buildingType: BuildingType,
   roofType: RoofType,
-  blocks: BaseBlock[],
+  blocks: BaseBlock[]
 ): BaseConfig {
   return baseConfigMultiFloor(buildingType, roofType, [blocks]);
 }
@@ -445,7 +406,7 @@ function baseConfig(
 function baseConfigMultiFloor(
   buildingType: BuildingType,
   roofType: RoofType,
-  floorsBlocks: BaseBlock[][],
+  floorsBlocks: BaseBlock[][]
 ): BaseConfig {
   return {
     roofType,
@@ -491,24 +452,8 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         base: baseConfig("house", "gable", [main]),
         components: [
           placeOnWall("door", "door", main, "front", 5, 0, "frontDoor"),
-          placeOnWall(
-            "window-front-left",
-            "window",
-            main,
-            "front",
-            2.5,
-            0,
-            "threeQuarter",
-          ),
-          placeOnWall(
-            "window-front-right",
-            "window",
-            main,
-            "front",
-            7.5,
-            0,
-            "threeQuarter",
-          ),
+          placeOnWall("window-front-left", "window", main, "front", 2.5, 0, "threeQuarter"),
+          placeOnWall("window-front-right", "window", main, "front", 7.5, 0, "threeQuarter"),
           placeOnWall("window-left", "window", main, "left", 6),
           placeOnWall("window-right", "window", main, "right", 6),
         ],
@@ -531,15 +476,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         base: baseConfig("house", "monoPitch", [main, wing]),
         components: [
           placeOnWall("door", "door", main, "front", 3, 0, "frontDoor"),
-          placeOnWall(
-            "window-main",
-            "window",
-            main,
-            "front",
-            7,
-            0,
-            "fullHeight",
-          ),
+          placeOnWall("window-main", "window", main, "front", 7, 0, "fullHeight"),
           placeOnWall("window-wing", "window", wing, "right", 3),
         ],
       };
@@ -578,33 +515,9 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
           placeOnWall("door", "door", ground, "front", 4, 0, "frontDoor"),
           placeOnWall("window-left", "window", ground, "left", 5, 0),
           placeOnWall("window-right", "window", ground, "right", 5, 0),
-          placeOnWall(
-            "window-upper-front",
-            "window",
-            upper,
-            "front",
-            4,
-            1,
-            "threeQuarter",
-          ),
-          placeOnWall(
-            "window-upper-left",
-            "window",
-            upper,
-            "left",
-            5,
-            1,
-            "threeQuarter",
-          ),
-          placeOnWall(
-            "window-upper-right",
-            "window",
-            upper,
-            "right",
-            5,
-            1,
-            "threeQuarter",
-          ),
+          placeOnWall("window-upper-front", "window", upper, "front", 4, 1, "threeQuarter"),
+          placeOnWall("window-upper-left", "window", upper, "left", 5, 1, "threeQuarter"),
+          placeOnWall("window-upper-right", "window", upper, "right", 5, 1, "threeQuarter"),
         ],
       };
     },
@@ -625,8 +538,11 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
       // One support column under each front corner of the cantilevered
       // strip, not a single central one — reads as an actual structural
       // porch rather than a lone post in the middle of the walkway.
-      const { scale: columnScale, centerY: columnCenterY } =
-        resolveComponentSize("column", "standard", ground.wallHeight);
+      const { scale: columnScale, centerY: columnCenterY } = resolveComponentSize(
+        "column",
+        "standard",
+        ground.wallHeight
+      );
       const cornerInset = columnScale[0] / 2 + 0.15;
       const columnZ = upper.z + upper.depth / 2 - cornerInset;
       const porchColumns: PlacedComponent[] = [
@@ -652,15 +568,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
           placeOnWall("window-left", "window", ground, "left", 4, 0),
           placeOnWall("window-right", "window", ground, "right", 4, 0),
           ...porchColumns,
-          placeOnWall(
-            "window-upper-front",
-            "window",
-            upper,
-            "front",
-            4,
-            1,
-            "fullHeight",
-          ),
+          placeOnWall("window-upper-front", "window", upper, "front", 4, 1, "fullHeight"),
           placeOnWall("window-upper-left", "window", upper, "left", 4, 1),
           placeOnWall("window-upper-right", "window", upper, "right", 4, 1),
           // Onto the open-air balcony/terrace formed on the ground floor's
@@ -676,7 +584,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
             upper.width,
             upperBack - groundBack,
             "z",
-            -1,
+            -1
           ),
           ...terraceRailings(
             "balcony",
@@ -686,7 +594,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
             upper.width,
             upperBack - groundBack,
             "z",
-            -1,
+            -1
           ),
         ],
       };
@@ -713,26 +621,10 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         components: [
           placeOnWall("door", "door", ground, "front", 3, 0, "frontDoor"),
           placeOnWall("window-ground-back", "window", ground, "back", 4, 0),
-          placeOnWall(
-            "window-upper-front",
-            "window",
-            upper,
-            "front",
-            4,
-            1,
-            "fullHeight",
-          ),
+          placeOnWall("window-upper-front", "window", upper, "front", 4, 1, "fullHeight"),
           // Onto the terrace left exposed by the shift.
           placeOnWall("door-upper-terrace", "door", upper, "left", 4, 1),
-          placeOnWall(
-            "window-upper-right",
-            "window",
-            upper,
-            "right",
-            4,
-            1,
-            "fullHeight",
-          ),
+          placeOnWall("window-upper-right", "window", upper, "right", 4, 1, "fullHeight"),
           ...terraceCanopy(
             "terrace",
             1,
@@ -742,7 +634,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
             upperLeft - groundLeft,
             upper.depth,
             "x",
-            -1,
+            -1
           ),
           ...terraceRailings(
             "terrace",
@@ -752,7 +644,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
             upperLeft - groundLeft,
             upper.depth,
             "x",
-            -1,
+            -1
           ),
         ],
       };
@@ -782,7 +674,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         12,
         bedroomsDepth,
         3,
-        1.5,
+        1.5
       );
       const suiteDepth = 4;
       const suite = block(
@@ -792,7 +684,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         12,
         suiteDepth,
         3,
-        1.5,
+        1.5
       );
       // Each stepped-back terrace spans the full width, from the block
       // above's own back wall to the wider block's back wall below it.
@@ -800,24 +692,12 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
       const bedroomsBack = bedrooms.z - bedrooms.depth / 2;
       const suiteBack = suite.z - suite.depth / 2;
       return {
-        base: baseConfigMultiFloor("house", "flat", [
-          [ground],
-          [bedrooms],
-          [suite],
-        ]),
+        base: baseConfigMultiFloor("house", "flat", [[ground], [bedrooms], [suite]]),
         components: [
           placeOnWall("door", "door", ground, "front", 6, 0, "frontDoor"),
           placeOnWall("window-ground-left", "window", ground, "left", 5, 0),
           placeOnWall("window-ground-right", "window", ground, "right", 5, 0),
-          placeOnWall(
-            "window-bedrooms-front",
-            "window",
-            bedrooms,
-            "front",
-            6,
-            1,
-            "threeQuarter",
-          ),
+          placeOnWall("window-bedrooms-front", "window", bedrooms, "front", 6, 1, "threeQuarter"),
           // Onto the terrace formed by the ground floor's roof.
           placeOnWall("door-bedrooms-terrace", "door", bedrooms, "back", 6, 1),
           ...terraceCanopy(
@@ -829,7 +709,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
             bedrooms.width,
             bedroomsBack - groundBack,
             "z",
-            -1,
+            -1
           ),
           ...terraceRailings(
             "bedrooms-terrace",
@@ -839,17 +719,9 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
             bedrooms.width,
             bedroomsBack - groundBack,
             "z",
-            -1,
+            -1
           ),
-          placeOnWall(
-            "window-suite-front",
-            "window",
-            suite,
-            "front",
-            6,
-            2,
-            "threeQuarter",
-          ),
+          placeOnWall("window-suite-front", "window", suite, "front", 6, 2, "threeQuarter"),
           // Onto the terrace formed by the bedroom floor's roof.
           placeOnWall("door-suite-terrace", "door", suite, "back", 6, 2),
           ...terraceCanopy(
@@ -861,7 +733,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
             suite.width,
             suiteBack - bedroomsBack,
             "z",
-            -1,
+            -1
           ),
           ...terraceRailings(
             "suite-terrace",
@@ -871,7 +743,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
             suite.width,
             suiteBack - bedroomsBack,
             "z",
-            -1,
+            -1
           ),
         ],
       };
@@ -897,75 +769,17 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
           // the tall glazed corner beside it (the connector's own front
           // wall) — matches the front elevation's lit entry.
           placeOnWall("door", "door", leftWing, "front", 9, 0, "frontDoor"),
-          placeOnWall(
-            "window-connector-front",
-            "window",
-            connector,
-            "front",
-            2.75,
-            0,
-            "fullHeight",
-          ),
-          placeOnWall(
-            "window-connector-back",
-            "window",
-            connector,
-            "back",
-            2.75,
-            0,
-            "threeQuarter",
-          ),
+          placeOnWall("window-connector-front", "window", connector, "front", 2.75, 0, "fullHeight"),
+          placeOnWall("window-connector-back", "window", connector, "back", 2.75, 0, "threeQuarter"),
           // The wide sliding terrace door on the main wing's front wall.
-          placeOnWall(
-            "window-left-terrace",
-            "window",
-            leftWing,
-            "front",
-            3,
-            0,
-            "fullHeight",
-          ),
-          placeOnWall(
-            "window-right-front",
-            "window",
-            rightWing,
-            "front",
-            5.5,
-            0,
-          ),
+          placeOnWall("window-left-terrace", "window", leftWing, "front", 3, 0, "fullHeight"),
+          placeOnWall("window-right-front", "window", rightWing, "front", 5.5, 0),
           placeOnWall("window-right-back", "window", rightWing, "back", 5.5, 0),
           // The decorative punched-square-grid gable ends, on both wings'
           // outer walls.
-          ...squareWindowGrid(
-            "grid-left",
-            0,
-            leftWing,
-            "left",
-            5,
-            6,
-            0.35,
-            0.9,
-            0.4,
-          ),
-          ...squareWindowGrid(
-            "grid-right",
-            0,
-            rightWing,
-            "right",
-            5,
-            6,
-            0.35,
-            0.9,
-            0.4,
-          ),
-          ...roofSlotComponent(
-            "solar-right",
-            "solarPanel",
-            rightWing,
-            0,
-            0,
-            "gable",
-          ),
+          ...squareWindowGrid("grid-left", 0, leftWing, "left", 5, 6, 0.35, 0.9, 0.4),
+          ...squareWindowGrid("grid-right", 0, rightWing, "right", 5, 6, 0.35, 0.9, 0.4),
+          ...roofSlotComponent("solar-right", "solarPanel", rightWing, 0, 0, "gable"),
         ],
       };
     },
@@ -978,85 +792,26 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     label: "Twin Gable Chalet (Balcony)",
     buildingType: "house",
     build: () => {
-      const leftGround = blockWith(
-        block("left-ground", -4.5, 0, 9, 11, 3, 2.6),
-        { ridgeAxis: "z" },
-      );
-      const rightGround = blockWith(
-        block("right-ground", 4.5, 0, 9, 11, 3, 3.2),
-        { ridgeAxis: "z" },
-      );
-      const leftUpper = blockWith(
-        block("left-upper", -4.5, 0, 9, 11, 2.8, 2.6),
-        { ridgeAxis: "z" },
-      );
-      const rightUpper = blockWith(
-        block("right-upper", 4.5, 0, 9, 11, 2.8, 3.2),
-        { ridgeAxis: "z" },
-      );
+      const leftGround = blockWith(block("left-ground", -4.5, 0, 9, 11, 3, 2.6), { ridgeAxis: "z" });
+      const rightGround = blockWith(block("right-ground", 4.5, 0, 9, 11, 3, 3.2), { ridgeAxis: "z" });
+      const leftUpper = blockWith(block("left-upper", -4.5, 0, 9, 11, 2.8, 2.6), { ridgeAxis: "z" });
+      const rightUpper = blockWith(block("right-upper", 4.5, 0, 9, 11, 2.8, 3.2), { ridgeAxis: "z" });
       return {
         base: baseConfigMultiFloor("house", "gable", [
           [leftGround, rightGround],
           [leftUpper, rightUpper],
         ]),
         components: [
-          placeOnWall(
-            "window-left-ground",
-            "window",
-            leftGround,
-            "front",
-            4.5,
-            0,
-            "fullHeight",
-          ),
-          placeOnWall(
-            "window-right-ground",
-            "window",
-            rightGround,
-            "front",
-            4.5,
-            0,
-            "fullHeight",
-          ),
-          placeOnWall(
-            "door-left-ground",
-            "door",
-            leftGround,
-            "back",
-            4.5,
-            0,
-            "frontDoor",
-          ),
+          placeOnWall("window-left-ground", "window", leftGround, "front", 4.5, 0, "fullHeight"),
+          placeOnWall("window-right-ground", "window", rightGround, "front", 4.5, 0, "fullHeight"),
+          placeOnWall("door-left-ground", "door", leftGround, "back", 4.5, 0, "frontDoor"),
           placeOnWall("door-left-balcony", "door", leftUpper, "front", 3, 1),
-          placeOnWall(
-            "window-left-upper",
-            "window",
-            leftUpper,
-            "front",
-            6,
-            1,
-            "threeQuarter",
-          ),
+          placeOnWall("window-left-upper", "window", leftUpper, "front", 6, 1, "threeQuarter"),
           placeOnWall("door-right-balcony", "door", rightUpper, "front", 3, 1),
-          placeOnWall(
-            "window-right-upper",
-            "window",
-            rightUpper,
-            "front",
-            6,
-            1,
-            "threeQuarter",
-          ),
+          placeOnWall("window-right-upper", "window", rightUpper, "front", 6, 1, "threeQuarter"),
           ...simpleBalcony("balcony-left", 1, leftUpper, "front", 1.8),
           ...simpleBalcony("balcony-right", 1, rightUpper, "front", 1.8),
-          ...roofSlotComponent(
-            "solar-left",
-            "solarPanel",
-            leftUpper,
-            0,
-            1,
-            "gable",
-          ),
+          ...roofSlotComponent("solar-left", "solarPanel", leftUpper, 0, 1, "gable"),
         ],
       };
     },
@@ -1090,42 +845,10 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         base: baseConfig("factoryHall", "flat", [main]),
         components: [
           placeOnWall("door", "door", main, "front", 12, 0, "hangar"),
-          placeOnWall(
-            "window-left-1",
-            "window",
-            main,
-            "left",
-            10,
-            0,
-            "fullHeight",
-          ),
-          placeOnWall(
-            "window-left-2",
-            "window",
-            main,
-            "left",
-            30,
-            0,
-            "fullHeight",
-          ),
-          placeOnWall(
-            "window-right-1",
-            "window",
-            main,
-            "right",
-            10,
-            0,
-            "fullHeight",
-          ),
-          placeOnWall(
-            "window-right-2",
-            "window",
-            main,
-            "right",
-            30,
-            0,
-            "fullHeight",
-          ),
+          placeOnWall("window-left-1", "window", main, "left", 10, 0, "fullHeight"),
+          placeOnWall("window-left-2", "window", main, "left", 30, 0, "fullHeight"),
+          placeOnWall("window-right-1", "window", main, "right", 10, 0, "fullHeight"),
+          placeOnWall("window-right-2", "window", main, "right", 30, 0, "fullHeight"),
           hallDucting("ducting", 0, main),
           ...hallBracing("main", 0, main),
           hallUnderroofRailing("railing-underroof", 0, main),
