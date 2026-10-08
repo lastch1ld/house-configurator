@@ -251,6 +251,8 @@ function App() {
         }}
       >
         <Header
+          floating
+          data-theme="dark"
           title="House Configurator"
           actions={
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
