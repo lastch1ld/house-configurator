@@ -32,6 +32,7 @@ import type {
   DoorStyle,
   PlacedComponent,
   RoofSlopeIndex,
+  RoofType,
   WallLocation,
   WallRecess,
   WallSide,
@@ -86,6 +87,14 @@ const FLOOR_COUNTS = Array.from(
  * natural resting height is a bit above center. Offset as a fraction of
  * wall height so it scales sensibly between a house and a tall factory hall. */
 const WINDOW_HIGH_OFFSET_RATIO = 0.15;
+
+/** One list for both roof controls (building-wide and per-block) so labels and order never drift. */
+const ROOF_TYPES: [RoofType, string][] = [
+  ["gable", "Gable"],
+  ["monoPitch", "Mono-Pitch"],
+  ["hip", "Hip"],
+  ["flat", "Flat"],
+];
 
 const BUILDING_TYPES: [BuildingType, string][] = [
   ["house", "House"],
@@ -432,16 +441,13 @@ function GlobalSettings() {
           size="medium"
           fullWidth
           value={base.roofType}
-          onChange={(e) =>
-            updateBase({
-              roofType: e.target.value as "gable" | "flat" | "monoPitch" | "hip",
-            })
-          }
+          onChange={(e) => updateBase({ roofType: e.target.value as RoofType })}
         >
-          <Option value="gable">Gable</Option>
-          <Option value="monoPitch">Mono-Pitch</Option>
-          <Option value="hip">Hip</Option>
-          <Option value="flat">Flat</Option>
+          {ROOF_TYPES.map(([value, label]) => (
+            <Option key={value} value={value}>
+              {label}
+            </Option>
+          ))}
         </SelectInput>
         {base.roofType !== "flat" && activeFloorBlocks.length > 1 && (
           <Switch
@@ -602,43 +608,23 @@ function BlockEditor({ block }: { block: BaseBlock }) {
 
       <Section label="Appearance">
         <span style={sectionLabelStyle}>Roof Type</span>
-        <ButtonRow>
-          <Button
-            size="small"
-            variant={block.roofType === undefined ? "primary" : "outline"}
-            onClick={() => updateBlock(block.id, { roofType: undefined })}
-          >
-            Building Default
-          </Button>
-          <Button
-            size="small"
-            variant={block.roofType === "gable" ? "primary" : "outline"}
-            onClick={() => updateBlock(block.id, { roofType: "gable" })}
-          >
-            Gable
-          </Button>
-          <Button
-            size="small"
-            variant={block.roofType === "monoPitch" ? "primary" : "outline"}
-            onClick={() => updateBlock(block.id, { roofType: "monoPitch" })}
-          >
-            Mono-Pitch
-          </Button>
-          <Button
-            size="small"
-            variant={block.roofType === "hip" ? "primary" : "outline"}
-            onClick={() => updateBlock(block.id, { roofType: "hip" })}
-          >
-            Hip
-          </Button>
-          <Button
-            size="small"
-            variant={block.roofType === "flat" ? "primary" : "outline"}
-            onClick={() => updateBlock(block.id, { roofType: "flat" })}
-          >
-            Flat
-          </Button>
-        </ButtonRow>
+        <SelectInput
+          size="medium"
+          fullWidth
+          value={block.roofType ?? ""}
+          onChange={(e) =>
+            updateBlock(block.id, {
+              roofType: (e.target.value || undefined) as RoofType | undefined,
+            })
+          }
+        >
+          <Option value="">Building Default</Option>
+          {ROOF_TYPES.map(([value, label]) => (
+            <Option key={value} value={value}>
+              {label}
+            </Option>
+          ))}
+        </SelectInput>
 
         <span style={sectionLabelStyle}>Wall Material</span>
         <MaterialSwatchPicker
