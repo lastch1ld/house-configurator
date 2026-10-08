@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
   pages: write
   id-token: write
 
@@ -17,16 +18,18 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # @lastch1ld/ui is a private GitHub package; this repo has Read access under the package's
+      # "Manage Actions access" setting, so the built-in token is enough.
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      # @lastch1ld/ui is a private repo; the lockfile pins it over ssh, so a read-only deploy key is enough.
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.UI_DEPLOY_KEY }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@lastch1ld"
       - run: npm ci
       - run: npm test
       - run: npm run build

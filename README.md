@@ -28,11 +28,16 @@ Browser-based 3D house configurator (React, Three.js, Zustand). Live demo: https
 
 ## Development
 
-The UI comes from `@lastch1ld/ui`, a **private** package. The source here is public, but `npm install` only
-works with read access to `github.com/lastch1ld/ui`; the live demo is the way to try it without that.
+The UI comes from `@lastch1ld/ui`, a **private** GitHub package. The source here is public, but `npm install`
+only works with a token that can read it; the live demo is the way to try it without that.
+
+```ini
+# ~/.npmrc (not committed)
+//npm.pkg.github.com/:_authToken=<token with read:packages>
+```
 
 ```bash
-npm install   # builds @lastch1ld/ui from its git repo on install
+npm install
 npm run dev   # http://localhost:5173
 npm test
 npm run build
@@ -40,5 +45,5 @@ npm run build
 
 ## Deploy
 
-Every push to `main` builds and publishes to GitHub Pages (`.github/workflows/pages.yml`). The build reads the
-private UI repo with a read-only deploy key stored as the `UI_DEPLOY_KEY` secret.
+Every push to `main` builds and publishes to GitHub Pages (`.github/workflows/pages.yml`). The workflow reads the
+private package with its built-in token; this repo is allowed under the package's "Manage Actions access".
