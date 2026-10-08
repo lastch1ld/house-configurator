@@ -11,7 +11,9 @@ import {
   Popover,
   Text,
 } from "@lastch1ld/ui";
-import "./tailwind.css";
+import "@lastch1ld/ui/fonts.css";
+import "@lastch1ld/ui/styles.css";
+import "@lastch1ld/ui/base.css";
 import "./App.css";
 import { useEffect, useMemo } from "react";
 import { MOUSE } from "three";

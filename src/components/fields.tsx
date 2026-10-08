@@ -42,20 +42,20 @@ export function useConfirmArm(timeoutMs = 4000) {
 export const fieldStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
-  gap: "var(--spacing-xs, 4px)",
+  gap: "4px",
 };
 
 export const sectionLabelStyle: CSSProperties = {
   fontSize: 11,
-  fontWeight: "var(--font-weight-medium, 500)",
+  fontWeight: "500",
   textTransform: "uppercase",
   letterSpacing: "0.04em",
-  color: "var(--color-gray-500, #adb5bd)",
+  color: "var(--ui-fg-subtle)",
 };
 
 const fieldLabelStyle: CSSProperties = {
-  fontSize: "var(--font-size-xs, 12px)",
-  color: "var(--color-gray-600, #6c757d)",
+  fontSize: "0.75rem",
+  color: "var(--ui-fg-muted)",
 };
 
 export function Section({ label, children }: { label: string; children: ReactNode }) {
@@ -64,10 +64,10 @@ export function Section({ label, children }: { label: string; children: ReactNod
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "var(--spacing-sm, 8px)",
-        paddingBottom: "var(--spacing-md, 16px)",
+        gap: "8px",
+        paddingBottom: "16px",
         borderBottom:
-          "var(--border-width, 1px) solid var(--color-gray-200, #e9ecef)",
+          "1px solid var(--ui-border)",
       }}
     >
       <span style={sectionLabelStyle}>{label}</span>
@@ -100,10 +100,10 @@ export function CollapsibleSection({
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "var(--spacing-sm, 8px)",
-        paddingBottom: "var(--spacing-md, 16px)",
+        gap: "8px",
+        paddingBottom: "16px",
         borderBottom:
-          "var(--border-width, 1px) solid var(--color-gray-200, #e9ecef)",
+          "1px solid var(--ui-border)",
       }}
     >
       <button
@@ -177,7 +177,7 @@ export function MaterialSwatchPicker<T extends string>({
                 width: 64,
                 padding: 4,
                 background: isSelected ? "rgba(255,204,0,0.14)" : "transparent",
-                border: `1.5px solid ${isSelected ? "var(--color-primary, #fc0)" : "rgba(0,0,0,0.12)"}`,
+                border: `1.5px solid ${isSelected ? "var(--ui-primary)" : "rgba(0,0,0,0.12)"}`,
                 borderRadius: 8,
                 cursor: "pointer",
                 "--hc-hover-bg": isSelected
@@ -203,7 +203,7 @@ export function MaterialSwatchPicker<T extends string>({
                 fontSize: 10,
                 lineHeight: 1.2,
                 textAlign: "center",
-                color: "var(--color-gray-700, #495057)",
+                color: "var(--ui-fg-muted)",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
@@ -225,7 +225,7 @@ export function FieldGrid({ children }: { children: ReactNode }) {
       style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
-        gap: "var(--spacing-sm, 8px)",
+        gap: "8px",
       }}
     >
       {children}
@@ -336,7 +336,7 @@ export function SliderField({
           // that ambiguity is a real everyday conflict on touch, not a
           // theoretical one. Scoped to just this element, so it doesn't
           // affect scrolling anywhere else.
-          style={{ flex: 1, accentColor: "var(--color-primary, #fc0)", touchAction: "none" }}
+          style={{ flex: 1, accentColor: "var(--ui-primary)", touchAction: "none" }}
         />
         <Input
           type="number"

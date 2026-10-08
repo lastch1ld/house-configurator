@@ -26,7 +26,7 @@ const tabStyle: CSSProperties = {
   backdropFilter: "blur(10px)",
   WebkitBackdropFilter: "blur(10px)",
   color: "#f3f4f6",
-  fontFamily: "var(--font-family, sans-serif)",
+  fontFamily: "var(--ui-font-sans)",
   fontSize: 13,
   fontWeight: 500,
   cursor: "pointer",

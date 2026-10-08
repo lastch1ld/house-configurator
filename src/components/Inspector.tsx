@@ -108,29 +108,29 @@ const asideStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   overflowY: "auto",
-  background: "var(--color-white, #fdfcfa)",
-  color: "var(--color-gray-900, #212529)",
-  border: "var(--border-width, 1px) solid var(--color-gray-300, #dee2e6)",
+  background: "var(--ui-surface)",
+  color: "var(--ui-fg)",
+  border: "1px solid var(--ui-border-strong)",
   borderRadius: 12,
   boxShadow: "0 16px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.2)",
-  fontFamily: "var(--font-family, sans-serif)",
-  fontSize: "var(--font-size-sm, 14px)",
+  fontFamily: "var(--ui-font-sans)",
+  fontSize: "0.8125rem",
 };
 
 const headerStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "var(--spacing-md, 16px)",
+  padding: "16px",
   borderBottom:
-    "var(--border-width, 1px) solid var(--color-gray-200, #e9ecef)",
+    "1px solid var(--ui-border)",
 };
 
 const bodyStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
-  gap: "var(--spacing-md, 16px)",
-  padding: "var(--spacing-md, 16px)",
+  gap: "16px",
+  padding: "16px",
 };
 
 function ButtonRow({
@@ -780,7 +780,7 @@ function BlockEditor({ block }: { block: BaseBlock }) {
                 flexDirection: "column",
                 gap: 4,
                 paddingTop: 8,
-                borderTop: "1px solid var(--color-border, #333)",
+                borderTop: "1px solid var(--ui-border)",
               }}
             >
               <Text as="span" size="xs" color="muted">
@@ -1844,8 +1844,8 @@ export function Inspector() {
       <MobileSheet
         title={title}
         onClose={() => setMobilePanel(null)}
-        background="var(--color-white, #fff)"
-        color="var(--color-gray-900, #212529)"
+        background="var(--ui-surface)"
+        color="var(--ui-fg)"
         hoverBg="rgba(0,0,0,0.06)"
       >
         {content}

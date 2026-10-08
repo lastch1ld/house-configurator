@@ -18,7 +18,7 @@ const rowBase: CSSProperties = {
   borderRadius: 6,
   border: "none",
   cursor: "pointer",
-  fontFamily: "var(--font-family, sans-serif)",
+  fontFamily: "var(--ui-font-sans)",
   fontSize: 13,
   textAlign: "left",
   color: "#f3f4f6",
@@ -282,7 +282,7 @@ export function BlocksSidebar() {
         // different treatments sitting side by side.
         boxShadow: "0 16px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.2)",
         color: "#f3f4f6",
-        fontFamily: "var(--font-family, sans-serif)",
+        fontFamily: "var(--ui-font-sans)",
       }}
     >
       <div
