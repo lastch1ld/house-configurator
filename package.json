@@ -11,7 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@lastch1ld/ui": "^0.6.0",
+    "@lastch1ld/ui": "^0.7.1",
     "@radix-ui/react-context-menu": "^2.3.7",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",

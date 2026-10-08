@@ -8,8 +8,14 @@ import {
 } from "@untitledui/icons";
 import {
   Button,
+  CollapsibleSection,
+  NumberField,
   Option,
+  Section,
+  SectionLabel,
   SelectInput,
+  SliderField,
+  SwatchPicker,
   Switch,
   Text,
 } from "@lastch1ld/ui";
@@ -37,15 +43,7 @@ import type {
   WallRecess,
   WallSide,
 } from "../types";
-import {
-  CollapsibleSection,
-  MaterialSwatchPicker,
-  NumberField,
-  Section,
-  SliderField,
-  sectionLabelStyle,
-  useConfirmArm,
-} from "./fields";
+import { useConfirmArm } from "./useConfirmArm";
 import { glassPanel, PANEL_HOVER } from "../glassPanel";
 import { MobileSheet, MobileSheetTab } from "./MobileSheet";
 import {
@@ -154,7 +152,7 @@ function TemplateDropdown({
   const [value, setValue] = useState("");
   return (
     <>
-      <span style={sectionLabelStyle}>{label}</span>
+      <SectionLabel>{label}</SectionLabel>
       <SelectInput
         size="small"
         fullWidth
@@ -307,7 +305,7 @@ function GlobalSettings() {
           </ButtonRow>
           {base.floors.length > 1 && (
             <>
-              <span style={sectionLabelStyle}>Editing floor</span>
+              <SectionLabel>Editing floor</SectionLabel>
               <ButtonRow>
                 {base.floors.map((_, i) => (
                   <Button
@@ -361,7 +359,7 @@ function GlobalSettings() {
             </Button>
           ))}
         </ButtonRow>
-        <span style={sectionLabelStyle}>Rotate whole building</span>
+        <SectionLabel>Rotate whole building</SectionLabel>
         <ButtonRow>
           <Button
             size="small"
@@ -383,8 +381,8 @@ function GlobalSettings() {
       </Section>
 
       <Section label="Materials">
-        <span style={sectionLabelStyle}>Wall</span>
-        <MaterialSwatchPicker
+        <SectionLabel>Wall</SectionLabel>
+        <SwatchPicker
           options={WALL_MATERIALS_BY_TYPE[base.buildingType].map((id) => ({
             id,
             label: WALL_MATERIALS[id].label,
@@ -424,8 +422,8 @@ function GlobalSettings() {
             </Text>
           </label>
         )}
-        <span style={sectionLabelStyle}>Roof</span>
-        <MaterialSwatchPicker
+        <SectionLabel>Roof</SectionLabel>
+        <SwatchPicker
           options={ROOF_MATERIALS_BY_TYPE[base.buildingType].map((id) => ({
             id,
             label: ROOF_MATERIALS[id].label,
@@ -579,7 +577,7 @@ function BlockEditor({ block }: { block: BaseBlock }) {
               max={20}
               onChange={(v) => updateBlock(block.id, { roofHeight: v })}
             />
-            <span style={sectionLabelStyle}>Pitch</span>
+            <SectionLabel>Pitch</SectionLabel>
             <ButtonRow>
               {ROOF_PITCH_PRESETS.map(([label, angleDeg]) => {
                 const span =
@@ -607,7 +605,7 @@ function BlockEditor({ block }: { block: BaseBlock }) {
       </Section>
 
       <Section label="Appearance">
-        <span style={sectionLabelStyle}>Roof Type</span>
+        <SectionLabel>Roof Type</SectionLabel>
         <SelectInput
           size="medium"
           fullWidth
@@ -626,8 +624,8 @@ function BlockEditor({ block }: { block: BaseBlock }) {
           ))}
         </SelectInput>
 
-        <span style={sectionLabelStyle}>Wall Material</span>
-        <MaterialSwatchPicker
+        <SectionLabel>Wall Material</SectionLabel>
+        <SwatchPicker
           options={[
             {
               id: "",
@@ -677,8 +675,8 @@ function BlockEditor({ block }: { block: BaseBlock }) {
           </label>
         )}
 
-        <span style={sectionLabelStyle}>Roof Material</span>
-        <MaterialSwatchPicker
+        <SectionLabel>Roof Material</SectionLabel>
+        <SwatchPicker
           options={[
             {
               id: "",
@@ -1832,7 +1830,7 @@ export function Inspector() {
         <Text as="strong" size="small" weight="semibold">
           {title}
         </Text>
-        <span style={sectionLabelStyle}>{hasSelection ? "Selected" : ""}</span>
+        <SectionLabel>{hasSelection ? "Selected" : ""}</SectionLabel>
       </div>
       <div style={bodyStyle}>{content}</div>
     </aside>

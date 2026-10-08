@@ -4,7 +4,7 @@ import { findBlockForComponent } from "../blockAssignment";
 import { useConfiguratorStore } from "../store";
 import type { PlacedComponent } from "../types";
 import { useIsNarrowViewport } from "../useIsNarrowViewport";
-import { useConfirmArm } from "./fields";
+import { useConfirmArm } from "./useConfirmArm";
 import { MobileSheet, MobileSheetTab } from "./MobileSheet";
 import { glassPanel, PANEL_HOVER } from "../glassPanel";
 
