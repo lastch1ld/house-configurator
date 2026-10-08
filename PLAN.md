@@ -1270,23 +1270,23 @@ wall-offset/edge calculation silently producing `NaN`), and component ids
 are unique. **Not visually verified** (no Chrome calls this session) —
 checked only via that test, `tsc -b --noEmit`, lint, and `vite build`.
 
-## 15. Reference-house recreation: Poggiolina / Sara / Ulissys (2026-08-31)
+## 15. Reference-house recreation: twin-gable villa / chalet / third villa (2026-08-31)
 
 Superseded §9's placeholder (no reference material had arrived yet) — you
 sent 3 real reference house photo sets instead of the old U/L-shaped ask:
-`Downloads/poggiolina` (Villa Poggiolina), `Downloads/Sara` (Chalet Sara),
-`Downloads/Ullisys` (Villa Ulissys). Reviewed each set's photos directly
+a twin-gable villa, a twin-gable chalet and
+a third villa (each a local photo folder). Reviewed each set's photos directly
 (no 3D models this time, just stills) and built 2 of the 3 as new
 `templates.ts` entries, block-shape/window/door placement prioritized over
 material accuracy per your explicit steer ("Structure and Model is more
 important than textures here"):
 
-- **`villa-poggiolina`** and **`chalet-sara`**: added, and confirmed
+- **`twin-gable-villa`** and **`twin-gable-chalet`**: added, and confirmed
   "almost right" by you looking at the live dev server. Kept in
   `templates.ts` as-is for now — the specific remaining tweaks are
   deliberately not listed here since you asked to hold that feedback
   until the 4 items below are sorted first, not to guess at it.
-- **`villa-ulissys`**: added, then called out by you as looking wrong
+- **`third-villa`**: added, then called out by you as looking wrong
   ("an abomination with the components we had") and **removed** the same
   session rather than left in a known-bad state — same call as the
   earlier starter-template revert (see "Starter templates..." section
@@ -1308,7 +1308,7 @@ implemented yet**, per your explicit instruction to record and hold
 rather than start coding):
 
 1. **A real "window group" component.** Today, a decorative grid of small
-   punched openings (Poggiolina's gable-end screens) can only be faked by
+   punched openings (the twin-gable villa's gable-end screens) can only be faked by
    placing one `window`-type `PlacedComponent` per opening — dozens of
    components for one visual feature, none of them selectable/movable as
    the single thing they actually are. Needs a new `ComponentType` (e.g.
@@ -1326,7 +1326,7 @@ rather than start coding):
    opening in that recessed (thinner) wall face; confirmed by reading
    `Base.tsx`'s `frontRuns`/`backRuns`/`leftRuns`/`rightRuns` construction,
    not assumed. The templates just never exercised this pairing — worth
-   redoing Poggiolina's gable screens as a shallow `WallRecess` with real
+   redoing the twin-gable villa's gable screens as a shallow `WallRecess` with real
    window cutouts once (1) exists, for the actual shadow/depth a punched
    concrete screen needs, instead of flat window planes glued onto a flat
    wall. For **roofs**, this genuinely doesn't exist — `skylight`/
@@ -1341,7 +1341,7 @@ rather than start coding):
    (`types.ts`) is hardcoded to `0 | 90 | 180 | 270` everywhere, including
    for polygon blocks — `rotatePolygon` (`polygonGeometry.ts`) only ever
    does a 90°-swap (`{x, z} -> {z, -x}` repeated), never real
-   trigonometry. Poggiolina's own two wings sit at a slight kink to each
+   trigonometry. the twin-gable villa's own two wings sit at a slight kink to each
    other in the reference photos, which today's engine simply cannot
    represent. **Your direction**: make free rotation an opt-in toggle,
    not the new default — ordinary blocks keep snapping the way they do
@@ -1362,8 +1362,8 @@ rather than start coding):
    blocks joined at a real angle rather than only 90°-swapped.
 
 **Sequencing, per your instruction**: document all 4 here now; none
-started. When picked back up, revisit `villa-ulissys` (and polish
-`villa-poggiolina`/`chalet-sara` per your held-back feedback) using
+started. When picked back up, revisit `third-villa` (and polish
+`twin-gable-villa`/`twin-gable-chalet` per your held-back feedback) using
 whichever of the 4 items are done by then, rather than patching the
 current templates' parameters in place.
 
