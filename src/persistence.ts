@@ -190,3 +190,18 @@ export function deleteBuild(id: string): SavedBuild[] {
   writeSavedBuilds(builds);
   return builds;
 }
+
+/** Validates a build that arrived from outside this browser (a share link), applying the same checks and
+ * migrations as a saved build. Returns null for anything that does not fit. */
+export function parseSharedBuild(raw: unknown): Pick<SavedBuild, "base" | "components"> | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const r = raw as Record<string, unknown>;
+  const candidate = migrateSavedBuildShape({
+    id: "shared",
+    name: "Shared build",
+    savedAt: 0,
+    base: r.base,
+    components: r.components,
+  });
+  return isSavedBuild(candidate) ? { base: candidate.base, components: candidate.components } : null;
+}

@@ -2,25 +2,33 @@ import { Bounds, Environment, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, N8AO, ToneMapping } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
-import { CornerUpLeft, CornerUpRight, HelpCircle, Home02, X } from "@untitledui/icons";
+import { CornerUpLeft, CornerUpRight, HelpCircle, Home02, Link01 } from "@untitledui/icons";
 import {
   Avatar,
   Button,
   Divider,
   Header,
+  Kbd,
   Popover,
   Text,
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastTitle,
+  ToastViewport,
+  Tooltip,
 } from "@lastch1ld/ui";
 import "@lastch1ld/ui/fonts.css";
 import "@lastch1ld/ui/styles.css";
 import "@lastch1ld/ui/base.css";
 import "./App.css";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MOUSE } from "three";
 import { overallFootprint } from "./baseGeometry";
 import { AxisIndicator } from "./components/AxisIndicator";
 import { Base } from "./components/Base";
 import { BlocksSidebar } from "./components/BlocksSidebar";
+import { buildShareUrl, decodeBuild, payloadFromHash, ShareLinkError } from "./shareLink";
 import { CameraFraming } from "./components/CameraFraming";
 import { Inspector } from "./components/Inspector";
 import { PlacedComponents } from "./components/PlacedComponents";
@@ -43,7 +51,39 @@ const SHORTCUTS: [string, string][] = [
   ["Ctrl+Shift+Z / Ctrl+Y", "Redo"],
 ];
 
+/** "Ctrl+Shift+Z / Ctrl+Y" as keycaps, with alternatives separated by "or". */
+function ShortcutKeys({ keys }: { keys: string }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
+      {keys.split(" / ").map((alt, i) => (
+        <span key={alt} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+          {i > 0 && (
+            <Text as="span" size="xs" color="muted">
+              or
+            </Text>
+          )}
+          {alt.split("+").map((k) => (
+            <Kbd key={k}>{k}</Kbd>
+          ))}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+type ShareToast = { id: number; title: string; description?: string; variant: "success" | "danger" };
+
+/** Copies text to the clipboard; falls back to a prompt where the Clipboard API is unavailable (e.g. plain http). */
+async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    window.prompt("Copy this link", text);
+  }
+}
+
 function App() {
+  const [shareToast, setShareToast] = useState<ShareToast | null>(null);
   const selectComponent = useConfiguratorStore((s) => s.selectComponent);
   const selectBlock = useConfiguratorStore((s) => s.selectBlock);
   const selectedIds = useConfiguratorStore((s) => s.selectedIds);
@@ -64,6 +104,51 @@ function App() {
   const floors = useConfiguratorStore((s) => s.base.floors);
   const allBlocks = useMemo(() => floors.flatMap((f) => f.blocks), [floors]);
   const footprint = useMemo(() => overallFootprint(allBlocks), [allBlocks]);
+
+  const share = async () => {
+    const { base, components } = useConfiguratorStore.getState();
+    try {
+      await copyText(await buildShareUrl(base, components));
+      setShareToast({
+        id: Date.now(),
+        title: "Link copied",
+        description: "Anyone with it can open this exact build.",
+        variant: "success",
+      });
+    } catch (e) {
+      setShareToast({
+        id: Date.now(),
+        title: "Couldn't create a link",
+        description: e instanceof ShareLinkError ? e.message : "Something went wrong. Try again.",
+        variant: "danger",
+      });
+    }
+  };
+
+  // Open a build from a share link: on first load, and when a link is pasted into an open tab.
+  useEffect(() => {
+    const openFromHash = async () => {
+      const payload = payloadFromHash(window.location.hash);
+      if (!payload) return;
+      // Drop the hash so a refresh does not overwrite edits made after opening.
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      const build = await decodeBuild(payload);
+      if (build) {
+        useConfiguratorStore.getState().loadTemplate(build.base, build.components);
+        setShareToast({ id: Date.now(), title: "Shared build opened", variant: "success" });
+      } else {
+        setShareToast({
+          id: Date.now(),
+          title: "That link couldn't be opened",
+          description: "It may be incomplete or from an incompatible version.",
+          variant: "danger",
+        });
+      }
+    };
+    void openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -194,51 +279,6 @@ function App() {
         </SceneContextMenu>
         <BlocksSidebar />
         <Inspector />
-        {notice && (
-          <div
-            role="status"
-            style={{
-              position: "absolute",
-              bottom: 24,
-              left: "50%",
-              transform: "translateX(-50%)",
-              zIndex: 15,
-              maxWidth: 420,
-              padding: "10px 14px",
-              borderRadius: 8,
-              background: "rgba(30,20,10,0.92)",
-              color: "#ffe6b3",
-              border: "1px solid rgba(255,180,60,0.4)",
-              fontFamily: "sans-serif",
-              fontSize: 13,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            <span>{notice}</span>
-            <button
-              onClick={dismissNotice}
-              aria-label="Dismiss"
-              className="hc-interactive"
-              style={{
-                display: "flex",
-                background: "transparent",
-                border: "none",
-                color: "inherit",
-                cursor: "pointer",
-                lineHeight: 1,
-                // Padding expands the tap target well past the icon
-                // itself (was a bare 15px font with zero padding) without
-                // it reading as visually oversized.
-                padding: 8,
-                margin: -6,
-              }}
-            >
-              <X style={{ width: 15, height: 15 }} />
-            </button>
-          </div>
-        )}
       </div>
       <div
         style={{
@@ -274,37 +314,49 @@ function App() {
           title="House Configurator"
           actions={
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Button
-                size="small"
-                variant="ghost"
-                icon={<CornerUpLeft />}
-                aria-label="Undo"
-                title="Undo (Ctrl+Z)"
-                disabled={!canUndo}
-                onClick={undo}
+              <Tooltip content="Copy a link to this build">
+                <Button size="small" variant="subtle" icon={<Link01 />} onClick={share}>
+                  Share
+                </Button>
+              </Tooltip>
+              <span
+                aria-hidden
+                style={{ width: 1, height: 16, background: "var(--ui-border-strong)" }}
               />
-              <Button
-                size="small"
-                variant="ghost"
-                icon={<CornerUpRight />}
-                aria-label="Redo"
-                title="Redo (Ctrl+Shift+Z)"
-                disabled={!canRedo}
-                onClick={redo}
-              />
+              <Tooltip content="Undo (Ctrl+Z)">
+                <Button
+                  size="small"
+                  variant="ghost"
+                  icon={<CornerUpLeft />}
+                  aria-label="Undo"
+                  disabled={!canUndo}
+                  onClick={undo}
+                />
+              </Tooltip>
+              <Tooltip content="Redo (Ctrl+Shift+Z)">
+                <Button
+                  size="small"
+                  variant="ghost"
+                  icon={<CornerUpRight />}
+                  aria-label="Redo"
+                  disabled={!canRedo}
+                  onClick={redo}
+                />
+              </Tooltip>
               <span
                 aria-hidden
                 style={{ width: 1, height: 16, background: "var(--ui-border-strong)" }}
               />
               <Popover
                 trigger={
-                  <Button
-                    size="small"
-                    variant="ghost"
-                    icon={<HelpCircle />}
-                    aria-label="Keyboard shortcuts"
-                    title="Keyboard shortcuts"
-                  />
+                  <Tooltip content="Keyboard shortcuts">
+                    <Button
+                      size="small"
+                      variant="ghost"
+                      icon={<HelpCircle />}
+                      aria-label="Keyboard shortcuts"
+                    />
+                  </Tooltip>
                 }
                 side="bottom"
                 align="end"
@@ -331,9 +383,7 @@ function App() {
                       <Text as="span" size="small" color="muted">
                         {description}
                       </Text>
-                      <Text as="span" size="small" weight="medium">
-                        {keys}
-                      </Text>
+                      <ShortcutKeys keys={keys} />
                     </div>
                   ))}
                 </div>
@@ -375,6 +425,26 @@ function App() {
           }
         />
       </div>
+      {notice && (
+        <Toast open onOpenChange={(o) => !o && dismissNotice()} duration={Infinity}>
+          <ToastDescription>{notice}</ToastDescription>
+          <ToastClose />
+        </Toast>
+      )}
+      {shareToast && (
+        <Toast
+          key={shareToast.id}
+          open
+          variant={shareToast.variant}
+          duration={3500}
+          onOpenChange={(o) => !o && setShareToast(null)}
+        >
+          <ToastTitle>{shareToast.title}</ToastTitle>
+          {shareToast.description && <ToastDescription>{shareToast.description}</ToastDescription>}
+          <ToastClose />
+        </Toast>
+      )}
+      <ToastViewport />
     </div>
   );
 }
